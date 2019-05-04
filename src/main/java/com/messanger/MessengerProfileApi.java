@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class MessengerProfileApi {
+public class MessengerProfileApi implements MesBod{
 	@JsonProperty("get_started")
 	private GetStarted getStarted;
 	@JsonProperty("persistent_menu")
