@@ -1,25 +1,30 @@
 package com.messanger.client;
 
 import com.messanger.*;
+import com.messanger.Requests.RequestObject;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class MessengerClient {
 
 	private final RestTemplate restTemplate;
-	private final String accessToken;
+	private final Map<String, String> accessTokenMap;
 	private final String serverUrl;
 	private final String webhook;
-	private Map<String, String> urlMap = new HashMap<>();
+	private final Map<String, String> urlMap;
 
-	public MessengerClient(String accessToken, String serverUrl, String webhook, String urlMap) {
-		this.accessToken = accessToken;
+	public MessengerClient(String accessTokenMap, String serverUrl, String webhook, String urlMap) {
 		this.serverUrl = serverUrl;
 		this.webhook = webhook;
 		this.urlMap = processMap(urlMap);
+		this.accessTokenMap = processMap(accessTokenMap);
+
 		restTemplate = new RestTemplateBuilder().rootUri("https://graph.facebook.com").build();
 	}
 
@@ -33,9 +38,10 @@ public abstract class MessengerClient {
 		sendRequest(messaging);
 	}
 
-	public UserData sendFacebookRequest(Long recipient) {
+	public UserData sendFacebookRequest(Long recipient, Platform platform) {
 		String dataFields = "?fields=first_name,last_name,profile_pic,locale&access_token=";
-		return restTemplate.getForEntity("/v2.6/" + recipient + dataFields + accessToken, UserData.class).getBody();
+		return restTemplate.getForEntity("/v2.6/" + recipient + dataFields + accessTokenMap.get(platform.name()),
+				UserData.class).getBody();
 	}
 
 	public void sendButtons(List<Button> buttons, String text, Long recipient, String templateName,
@@ -59,12 +65,16 @@ public abstract class MessengerClient {
 		sendRequest(new Messaging(message, new Recipient(recipient)));
 	}
 
-	public void sendRequest(Object object) {
-		makeRequest("/v2.6/me/messages?access_token=" + accessToken, object);
+	public void sendRequest(RequestObject request) {
+		Platform platform = request.getPlatform();
+		request.setPlatform(null);
+		makeRequest("/v2.6/me/messages?access_token=" + accessTokenMap.get(platform.name()), request);
 	}
 
-	public void sendRequest(Object object, String type) {
-		makeRequest("/v2.6/me/" + type + "?access_token=" + accessToken, object);
+	public void sendRequest(RequestObject request, String type) {
+		Platform platform = request.getPlatform();
+		request.setPlatform(null);
+		makeRequest("/v2.6/me/" + type + "?access_token=" + accessTokenMap.get(platform.name()), request);
 	}
 
 	public void setWebHooks() {

@@ -2,13 +2,14 @@ package com.messanger;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.messanger.Requests.RequestObject;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Messaging implements MesBod {
+public class Messaging implements MesBod, RequestObject {
 	@JsonProperty("messaging_type")
 	private String messagingType;
 	private Sender sender;
@@ -17,6 +18,7 @@ public class Messaging implements MesBod {
 	private Message message;
 	private PostBack postback;
 	private String tag;
+	private Platform platform;
 
 	public Messaging() {
 	}
