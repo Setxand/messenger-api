@@ -28,23 +28,23 @@ public abstract class MessengerClient {
 		restTemplate = new RestTemplateBuilder().rootUri("https://graph.facebook.com").build();
 	}
 
-	public abstract void errorMessage(Long recipient);
+	public abstract void errorMessage(Messaging messaging);
 
 	public abstract void sendSimpleQuestion(Long recipient, String text, String payload, String splitter);
 
-	public void sendSimpleMessage(String text, Long recipient) {
-		Message message = new Message(text);
-		Messaging messaging = new Messaging(message, new Recipient(recipient));
+	public void sendSimpleMessage(String text, Messaging messaging) {
+		messaging.setRecipient(new Recipient(messaging.getSender().getId()));
+		messaging.setMessage(new Message(text));
 		sendRequest(messaging);
 	}
 
-	public UserData sendFacebookRequest(Long recipient, Platform platform) {
+	public UserData getFacebookUserInfo(Long recipient, Platform platform) {
 		String dataFields = "?fields=first_name,last_name,profile_pic,locale&access_token=";
 		return restTemplate.getForEntity("/v2.6/" + recipient + dataFields + accessTokenMap.get(platform.name()),
 				UserData.class).getBody();
 	}
 
-	public void sendButtons(List<Button> buttons, String text, Long recipient, String templateName,
+	public void sendButtons(List<Button> buttons, String text, Messaging messaging, String templateName,
 							String attachmentType) {
 		Attachment attachment = new Attachment();
 		attachment.setType(attachmentType);
@@ -55,7 +55,9 @@ public abstract class MessengerClient {
 		attachment.setPayload(payload);
 		Message message = new Message();
 		message.setAttachment(attachment);
-		sendRequest(new Messaging(message, new Recipient(recipient)));
+		messaging.setMessage(message);
+		messaging.setRecipient(new Recipient(messaging.getSender().getId()));
+		sendRequest(messaging);
 	}
 
 	public void sendQuickReplies(List<QuickReply> quickReplies, String text, Long recipient) {
@@ -66,9 +68,7 @@ public abstract class MessengerClient {
 	}
 
 	public void sendRequest(RequestObject request) {
-		Platform platform = request.getPlatform();
-		request.setPlatform(null);
-		makeRequest("/v2.6/me/messages?access_token=" + accessTokenMap.get(platform.name()), request);
+		makeRequest("/v2.6/me/messages?access_token=" + accessTokenMap.get(request.getPlatform().name()), request);
 	}
 
 	public void sendRequest(RequestObject request, String type) {
@@ -113,4 +113,5 @@ public abstract class MessengerClient {
 		return map;
 	}
 
-}
+}//get Access-tok
+//https://graph.facebook.com/oauth/access_token?client_id=asdasdasd&client_secret=fdsfdsf&grant_type=client_credentials
