@@ -6,10 +6,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class MessengerClient {
 
@@ -60,11 +57,12 @@ public abstract class MessengerClient {
 		sendRequest(messaging);
 	}
 
-	public void sendQuickReplies(List<QuickReply> quickReplies, String text, Long recipient) {
-		Message message = new Message();
-		message.setQuickReplies(quickReplies);
-		message.setText(text);
-		sendRequest(new Messaging(message, new Recipient(recipient)));
+	public void sendQuickReplies(String text, Messaging messaging, QuickReply... quickReplies) {
+		messaging.setMessage(new Message());
+		messaging.getMessage().setQuickReplies(Arrays.asList(quickReplies));
+		messaging.getMessage().setText(text);
+		messaging.setRecipient(new Recipient(messaging.getSender().getId()));
+		sendRequest(messaging);
 	}
 
 	public void sendRequest(RequestObject request) {

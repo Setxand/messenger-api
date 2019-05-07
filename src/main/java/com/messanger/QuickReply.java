@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class QuickReply {
 	@JsonProperty("content_type")
-	private String contentType;
+	private String contentType = "text";
 	private String title;
 	private String payload;
 	@JsonProperty("image_url")
@@ -21,6 +21,11 @@ public class QuickReply {
 
 	public QuickReply(String contentType, String title, String payload) {
 		this.contentType = contentType;
+		this.title = title;
+		this.payload = payload;
+	}
+
+	public QuickReply(String title, String payload) {
 		this.title = title;
 		this.payload = payload;
 	}
