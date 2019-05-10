@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class Button {
 
-	private String type;
+	private String type = "postback";
 	private String url;
 	private String title;
 	private String payload;
@@ -21,8 +21,8 @@ public class Button {
 	public Button() {
 	}
 
-	public Button(String type, String title) {
-		this.type = type;
+	public Button(String title, String payload) {
+		this.payload = payload;
 		this.title = title;
 	}
 

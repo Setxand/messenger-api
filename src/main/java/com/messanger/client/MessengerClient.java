@@ -27,8 +27,6 @@ public abstract class MessengerClient {
 
 	public abstract void errorMessage(Messaging messaging);
 
-	public abstract void sendSimpleQuestion(Long recipient, String text, String payload, String splitter);
-
 	public void sendSimpleMessage(String text, Messaging messaging) {
 		messaging.setRecipient(new Recipient(messaging.getSender().getId()));
 		messaging.setMessage(new Message(text));
@@ -102,6 +100,23 @@ public abstract class MessengerClient {
 
 
 		makeRequest(url, setMessengerWebHook);
+	}
+
+	public void sendGenericTemplate(List<Element> elements, Messaging messaging) {
+		Payload payload = new Payload();
+		payload.setTemplateType("generic");
+		payload.setElements(elements);
+
+		Attachment attachment = new Attachment();
+		attachment.setPayload(payload);
+		attachment.setType("template");
+
+		Message message = new Message();
+		message.setAttachment(attachment);
+
+		messaging.setMessage(message);
+		messaging.setRecipient(new Recipient(messaging.getSender().getId()));
+		sendRequest(messaging);
 	}
 
 	private static Map<String, String> processMap(String urlMap) {
