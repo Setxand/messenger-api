@@ -10,7 +10,7 @@ import lombok.Setter;
 public class Attachment {
 	private String type;
 	private Payload payload;
-
+	private String url;
 
 	public Attachment(String type, Payload payload) {
 		this.type = type;

@@ -20,6 +20,7 @@ public class Message {
 	@JsonProperty("quick_replies")
 	private List<QuickReply> quickReplies;
 	private Attachment attachment;
+	private List<Attachment> attachments;
 
 	@JsonProperty("dynamic_text")
 	private DynamicText dynamicText;
