@@ -31,4 +31,20 @@ public class Button {
 		this.title = title;
 		this.payload = payload;
 	}
+
+	public Button(String title) {
+		this.title = title;
+	}
+
+	public Button urlButton(String url){
+		this.type = "web_url";
+		this.url = url;
+		return this;
+	}
+
+	public Button webView() {
+		this.mesExtentions = true;
+		this.heightRatio = "full";
+		return this;
+	}
 }
